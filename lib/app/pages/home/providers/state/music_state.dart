@@ -1,29 +1,13 @@
-class MusicState {
-  final bool isPlaying;
-  final String currentTrack;
+import 'package:f_player/data/models/music_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'music_state.freezed.dart';
 
-  MusicState({
-    this.isPlaying = false,
-    this.currentTrack = '',
-  });
-
-  MusicState copyWith({
-    bool? isPlaying,
-    String? currentTrack,
-  }) {
-    return MusicState(
-      isPlaying: isPlaying ?? this.isPlaying,
-      currentTrack: currentTrack ?? this.currentTrack,
-    );
-  }
-
-  @override
-  bool operator ==(covariant MusicState other) {
-    if (identical(this, other)) return true;
-
-    return other.isPlaying == isPlaying && other.currentTrack == currentTrack;
-  }
-
-  @override
-  int get hashCode => isPlaying.hashCode ^ currentTrack.hashCode;
+@freezed
+class MusicState with _$MusicState {
+  const MusicState._();
+  const factory MusicState({
+    @Default(false) bool isPlaying,
+    MusicModel? currentTrack,
+    @Default([]) List<MusicModel> tracks,
+  }) = _MusicState;
 }

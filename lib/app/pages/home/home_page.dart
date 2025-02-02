@@ -8,40 +8,52 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final musicState = ref.watch(musicNotifierProvider);
-    final musicList = ref.watch(musicListProvider);
 
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Музыкальный плеер'),
-        ),
-        body: musicList.when(
-          data: (tracks) => ListView.builder(
-            itemCount: tracks.length,
-            itemBuilder: (context, index) {
-              final trackPath = tracks[index];
-              final isPlaying =
-                  musicState.isPlaying && musicState.currentTrack == trackPath;
+          appBar: AppBar(
+            title: TextField(
+              onTapOutside: (event) => FocusScope.of(context).unfocus(),
+              onChanged: (value) =>
+                  ref.read(musicNotifierProvider.notifier).findMusic(value),
+            ),
+          ),
+          body: Builder(
+            builder: (context) {
+              if (musicState.tracks.isEmpty) {
+                return Center(
+                  child: ElevatedButton(
+                    onPressed: () =>
+                        ref.read(musicNotifierProvider.notifier).fetchMusic(),
+                    child: const Text('Повторить'),
+                  ),
+                );
+              }
+              return ListView.builder(
+                itemCount: musicState.tracks.length,
+                itemBuilder: (context, index) {
+                  final track = musicState.tracks[index];
+                  final showTrailing = musicState.currentTrack?.id ==
+                      musicState.tracks[index].id;
 
-              return ListTile(
-                title: Text(trackPath),
-                trailing: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                onTap: () {
-                  ref
-                      .read(musicNotifierProvider.notifier)
-                      .playOrPause(trackPath);
+                  return ListTile(
+                    title: Text(track.title),
+                    leading: Text(track.artist),
+                    trailing: showTrailing
+                        ? Icon(
+                            musicState.isPlaying
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                          )
+                        : const SizedBox(),
+                    onTap: () => ref
+                        .read(musicNotifierProvider.notifier)
+                        .playOrPause(track),
+                  );
                 },
               );
             },
-          ),
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
-          error: (error, _) => Center(
-            child: Text('Ошибка: $error'),
-          ),
-        ),
-      ),
+          )),
     );
   }
 }

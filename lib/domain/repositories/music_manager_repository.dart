@@ -1,7 +1,5 @@
-import 'dart:io';
+import 'package:f_player/data/models/music_model.dart';
 
 abstract class MusicManagerRepository {
-  Stream<File> getAllMusic();
-
-  Future<List<String>> getMusic();
+  Future<List<MusicModel>> getMusic();
 }

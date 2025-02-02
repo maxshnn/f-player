@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:f_player/data/models/music_model.dart';
 import 'package:f_player/data/services/local/music_manager_service.dart';
 import 'package:f_player/domain/repositories/music_manager_repository.dart';
 
@@ -11,12 +10,13 @@ class MusicManagerRepositoryImpl implements MusicManagerRepository {
   }) : _musicManagerService = musicManagerService;
 
   @override
-  Stream<File> getAllMusic() async* {
-    yield* _musicManagerService.stream();
-  }
-
-  @override
-  Future<List<String>> getMusic() async {
-    return _musicManagerService.getMusic();
+  Future<List<MusicModel>> getMusic() async {
+    final data = await _musicManagerService.getMusic();
+    return List.generate(
+      data.length,
+      (index) => MusicModel.fromJson(
+        data[index],
+      ),
+    );
   }
 }
